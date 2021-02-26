@@ -1,1 +1,120 @@
-<p> Hello World! </p>
+<html>
+
+<head>
+    <title>Open Up The Cloud!</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.thedevcoach.co.uk/cdn/landingpage.css">
+    <script src="./d3.min.js" charset="utf-8"></script>
+    <script src="./c3.min.js"></script>
+    <script src="./data.js"></script>
+    <link rel="stylesheet" href="node_modules/c3/c3.min.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <h1> Welcome to the "Open Up The Cloud" Survey! </h1>
+
+        <p>I created open up the cloud with purpose providing, open, transparent data about the cloud industry, to help
+            out those who are
+            trying to get into cloud. </p>
+
+        <a href="https://docs.google.com/forms/d/1OLjNpqsJLaH9WcJQTmfZVnUlvY26vmgpyiccYgPTiWI/edit" target="_blank">
+            <button name="subscribe" type="submit">Complete The Survey!</button>
+        </a>
+
+        <h2>The Results</h2>
+
+        <div id="content"></div>
+
+        <h2>That's All! </h2>
+
+        <p>Thanks for stopping by, if you want to fill out the survey you can find it here: </p>
+
+        <a href="https://docs.google.com/forms/d/1OLjNpqsJLaH9WcJQTmfZVnUlvY26vmgpyiccYgPTiWI/edit" target="_blank">
+            <button name="subscribe" type="submit">Complete The Survey!</button>
+        </a>
+
+
+        <br>
+
+        <p>
+            Made with ❤️ by
+            <a href="https://twitter.com/loujaybee">
+                Lou Bichard
+            </a>
+            |
+            <a href="https://github.com/thedevcoach/openupthecloud">
+                Contribute on GitHub
+            </a>
+        </p>
+    </div>
+    <script>
+        const parsed = {};
+        for (const [index, datum] of DATA.entries()) {
+            for (const [question, answer] of Object.entries(datum)) {
+
+                let answers;
+                // Make object per question
+                if (!parsed[question]) parsed[question] = {}
+
+                // Handle multi-answers
+                if (typeof answer === "string" && answer.includes(',')) {
+                    answers = answer.split(', ')
+                }
+
+                if (!answers) {
+                    // Increment count
+                    if (parsed[question][answer] === undefined) {
+                        parsed[question][answer] = 1;
+                    } else {
+                        // Increment subsequent counts
+                        parsed[question][answer] = parsed[question][answer] + 1
+                    }
+                } else {
+                    for (const [_, answer] of answers.entries()) {
+                        if (parsed[question][answer] === undefined) {
+                            parsed[question][answer] = 1;
+                        } else {
+                            // Increment subsequent counts
+                            parsed[question][answer] = parsed[question][answer] + 1
+                        }
+                    }
+                }
+            }
+        }
+        console.log(parsed)
+        let idx = 0;
+        for (const [question, results] of Object.entries(parsed)) {
+            const elem = document.createElement('div');
+            const breakLine = document.createElement('br');
+            const header = document.createElement('h3');
+            header.innerText = question
+            document.getElementById('content').appendChild(header);
+            document.getElementById('content').appendChild(elem);
+            document.getElementById('content').appendChild(breakLine);
+            document.getElementById('content').appendChild(breakLine);
+
+            let data = [];
+            for (const [answer, value] of Object.entries(results)) {
+                data.push([answer, value])
+            }
+            c3.generate({
+                bindto: elem,
+                legend: {
+                    position: 'right'
+                },
+                data: {
+                    type: 'pie',
+                    columns: data
+                },
+                pie: {
+                    label: {
+                        format: function (value) { return value; }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
